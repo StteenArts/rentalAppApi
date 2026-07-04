@@ -1,52 +1,87 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using rentalApp.Models;
+using rentalApp.Data;
+using rentalApp.Extensions;
 using rentalApp.Models.Dtos;
 using rentalApp.Services;
 using RentalApp.Services;
 
 namespace rentalApp.Controllers;
+
 [ApiController]
 [Route("api/reservations")]
 public class ReservationController : ControllerBase
 {
     private readonly IReservationService _reservationService;
     private readonly NotificationService _notificationService;
-    private readonly UserService _userService;
+    private readonly AppDbContext _context;
 
     public ReservationController(
         IReservationService reservationService,
         NotificationService notificationService,
-        UserService userService)
+        AppDbContext context)
     {
         _reservationService = reservationService;
         _notificationService = notificationService;
-        _userService = userService;
+        _context = context;
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateReservation(CreateReservationDto dto, string email)
+    public async Task<IActionResult> CreateReservation(CreateReservationDto dto)
     {
-        var user = await _userService.GetUserByEmail(email);
+        var userId = User.GetUserId();
 
-        var result = await _reservationService.CreateReservation(user.Id, dto);
+        var result = await _reservationService.CreateReservation(userId, dto);
 
+        var user = await _context.Users.FindAsync(userId);
         await _notificationService.SendAsync(
-            user.Id,
+            userId,
             "Reserva confirmada",
             "Tu reserva fue confirmada correctamente.",
-            user.Email
+            user!.Email
         );
 
-        return Ok(result);
+        return StatusCode(StatusCodes.Status201Created, result);
     }
 
     [HttpGet("my")]
-    public async Task<IActionResult> MyReservations(string email)
+    public async Task<IActionResult> MyReservations()
     {
-        var user = await _userService.GetUserByEmail(email);
+        var userId = User.GetUserId();
 
-        var reservations = await _reservationService.GetByUserId(user.Id);
+        var reservations = await _reservationService.GetByUserId(userId);
 
         return Ok(reservations);
+    }
+
+    [Authorize(Roles = "Owner,Admin")]
+    [HttpGet("owner")]
+    public async Task<IActionResult> OwnerReservations()
+    {
+        var userId = User.GetUserId();
+        var isAdmin = User.IsInRole("Admin");
+
+        var reservations = await _reservationService.GetByOwnerId(userId, isAdmin);
+
+        return Ok(reservations);
+    }
+
+    [HttpPost("{id}/cancel")]
+    public async Task<IActionResult> Cancel(Guid id)
+    {
+        var userId = User.GetUserId();
+        var isAdmin = User.IsInRole("Admin");
+
+        var reservation = await _reservationService.CancelReservation(userId, id, isAdmin);
+
+        var user = await _context.Users.FindAsync(reservation.UserId);
+        await _notificationService.SendAsync(
+            reservation.UserId,
+            "Reserva cancelada",
+            "Tu reserva fue cancelada.",
+            user!.Email
+        );
+
+        return Ok(reservation);
     }
 }

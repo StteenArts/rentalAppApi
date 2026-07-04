@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/home/cohorte6/Escritorio/sars_zone/rentalApp/rentalApp.csproj": {}
+    "/home/csharp/Escritorio/sars_zone/rentalAppApi/rentalApp.csproj": {}
   },
   "projects": {
-    "/home/cohorte6/Escritorio/sars_zone/rentalApp/rentalApp.csproj": {
+    "/home/csharp/Escritorio/sars_zone/rentalAppApi/rentalApp.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/cohorte6/Escritorio/sars_zone/rentalApp/rentalApp.csproj",
+        "projectUniqueName": "/home/csharp/Escritorio/sars_zone/rentalAppApi/rentalApp.csproj",
         "projectName": "rentalApp",
-        "projectPath": "/home/cohorte6/Escritorio/sars_zone/rentalApp/rentalApp.csproj",
-        "packagesPath": "/home/cohorte6/.nuget/packages/",
-        "outputPath": "/home/cohorte6/Escritorio/sars_zone/rentalApp/obj/",
+        "projectPath": "/home/csharp/Escritorio/sars_zone/rentalAppApi/rentalApp.csproj",
+        "packagesPath": "/home/csharp/.nuget/packages/",
+        "outputPath": "/home/csharp/Escritorio/sars_zone/rentalAppApi/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/home/cohorte6/.nuget/NuGet/NuGet.Config"
+          "/home/csharp/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net10.0"
@@ -45,6 +45,10 @@
         "net10.0": {
           "targetAlias": "net10.0",
           "dependencies": {
+            "BCrypt.Net-Next": {
+              "target": "Package",
+              "version": "[4.2.0, )"
+            },
             "ClosedXML": {
               "target": "Package",
               "version": "[0.105.0, )"
@@ -52,6 +56,10 @@
             "FluentValidation.AspNetCore": {
               "target": "Package",
               "version": "[11.3.1, )"
+            },
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[10.0.9, )"
             },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",

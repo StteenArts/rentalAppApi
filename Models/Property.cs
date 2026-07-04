@@ -15,8 +15,10 @@ public class Property
     public string ImageUrl { get; set; }
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    
+
     public bool IsActive { get; set; } = true;
-    
+
     public Guid OwnerId { get; set; }
+
+    public ICollection<PropertyImage> Images { get; set; } = new List<PropertyImage>();
 }

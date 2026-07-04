@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Dashboard | Atelier Dwelling</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@100..900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "tertiary":"#615c54","inverse-primary":"#ffb5a1","surface-container":"#f0eded",
+          "on-secondary-fixed":"#161e09","secondary":"#586247","on-primary":"#ffffff",
+          "surface-bright":"#fcf9f8","surface-container-low":"#f6f3f2","surface":"#fcf9f8",
+          "primary-container":"#b35c44","inverse-on-surface":"#f3f0f0","on-error":"#ffffff",
+          "on-primary-fixed-variant":"#79301b","primary-fixed":"#ffdbd1","error":"#ba1a1a",
+          "primary":"#94442e","on-surface":"#1b1c1c","primary-fixed-dim":"#ffb5a1",
+          "secondary-container":"#dce7c5","error-container":"#ffdad6","secondary-fixed-dim":"#c0cbaa",
+          "background":"#fcf9f8","on-tertiary-container":"#fffcff","on-surface-variant":"#55433e",
+          "on-tertiary":"#ffffff","on-secondary-container":"#5e684d","on-primary-container":"#fffcff",
+          "on-tertiary-fixed-variant":"#4b463f","surface-variant":"#e4e2e1","surface-container-highest":"#e4e2e1",
+          "on-background":"#1b1c1c","tertiary-fixed":"#e9e1d7","inverse-surface":"#303030",
+          "on-primary-fixed":"#3b0900","outline":"#88726d","surface-dim":"#dcd9d9",
+          "surface-tint":"#974730","on-secondary-fixed-variant":"#414a31","on-secondary":"#ffffff",
+          "tertiary-fixed-dim":"#cdc5bc","outline-variant":"#dbc1ba","surface-container-high":"#eae7e7",
+          "secondary-fixed":"#dce7c5","on-tertiary-fixed":"#1e1b15","on-error-container":"#93000a",
+          "surface-container-lowest":"#ffffff","tertiary-container":"#7a746c"
+        },
+        "borderRadius":{"DEFAULT":"0.125rem","lg":"0.25rem","xl":"0.5rem","full":"0.75rem"},
+        "spacing":{"unit":"8px","container-max":"1280px","gutter":"24px","margin-mobile":"20px","margin-desktop":"64px"},
+        "fontFamily":{"display-lg":["Playfair Display"],"body-lg":["Inter"],"body-md":["Inter"],"headline-md":["Playfair Display"],"ui-label":["Inter"],"label-caps":["Inter"],"headline-sm":["Playfair Display"],"display-lg-mobile":["Playfair Display"]},
+        "fontSize":{
+          "display-lg":["48px",{"lineHeight":"1.1","letterSpacing":"-0.02em","fontWeight":"400"}],
+          "body-lg":["18px",{"lineHeight":"1.6","fontWeight":"400"}],
+          "body-md":["16px",{"lineHeight":"1.5","fontWeight":"400"}],
+          "headline-md":["32px",{"lineHeight":"1.2","fontWeight":"400"}],
+          "ui-label":["14px",{"lineHeight":"1.2","fontWeight":"500"}],
+          "label-caps":["12px",{"lineHeight":"1.0","letterSpacing":"0.15em","fontWeight":"500"}],
+          "headline-sm":["24px",{"lineHeight":"1.3","fontWeight":"400"}],
+          "display-lg-mobile":["32px",{"lineHeight":"1.2","fontWeight":"400"}]
+        }
+      }
+    }
+  }
+</script>
+<style>
+  body { background-color: #fcf9f8; color: #1b1c1c; -webkit-font-smoothing: antialiased; }
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24; font-size: 20px; }
+  .chart-bar { transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); }
+  .editorial-border { border: 1px solid #dbc1ba; }
+</style>
+</head>
+<body class="font-body-md text-body-md overflow-x-hidden">
+<div id="nav-container"></div>
+<main class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-12 md:py-20">
+
+  <!-- Header & Filters -->
+  <section class="flex flex-col md:flex-row justify-between items-baseline mb-16 gap-8">
+    <div>
+      <h1 class="font-display-lg text-display-lg mb-2">Portfolio Performance</h1>
+      <p class="text-tertiary font-body-lg">Analytical overview of your properties</p>
+    </div>
+    <div class="flex flex-col md:flex-row items-end gap-6 w-full md:w-auto">
+      <div class="flex flex-col gap-2 w-full md:w-48">
+        <label class="font-label-caps text-label-caps text-on-surface-variant uppercase">From</label>
+        <div class="relative w-full border-b border-outline-variant pb-1">
+          <input id="start-date" type="date" class="bg-transparent w-full font-ui-label text-ui-label py-1 focus:outline-none"/>
+        </div>
+      </div>
+      <div class="flex flex-col gap-2 w-full md:w-48">
+        <label class="font-label-caps text-label-caps text-on-surface-variant uppercase">To</label>
+        <div class="relative w-full border-b border-outline-variant pb-1">
+          <input id="end-date" type="date" class="bg-transparent w-full font-ui-label text-ui-label py-1 focus:outline-none"/>
+        </div>
+      </div>
+      <button id="apply-btn" class="flex items-center gap-2 border border-outline-variant px-6 py-3 font-ui-label text-ui-label uppercase tracking-widest hover:bg-surface-container-low transition-colors w-full md:w-auto">
+        <span class="material-symbols-outlined">filter_list</span>
+        Apply
+      </button>
+      <button id="export-btn" class="flex items-center gap-2 bg-primary text-on-primary px-6 py-3 font-ui-label text-ui-label uppercase tracking-widest hover:opacity-90 transition-opacity w-full md:w-auto">
+        <span class="material-symbols-outlined">download</span>
+        Export Excel
+      </button>
+    </div>
+  </section>
+
+  <!-- KPI Bento Grid -->
+  <section class="grid grid-cols-1 md:grid-cols-5 gap-gutter mb-20">
+    <div class="editorial-border p-8 flex flex-col justify-between h-40 bg-white">
+      <p class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest">Total Properties</p>
+      <div id="kpi-props" class="font-display-lg text-display-lg text-primary">—</div>
+    </div>
+    <div class="editorial-border p-8 flex flex-col justify-between h-40 bg-white">
+      <p class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest">Total Bookings</p>
+      <div id="kpi-total" class="font-display-lg text-display-lg text-primary">—</div>
+    </div>
+    <div class="editorial-border p-8 flex flex-col justify-between h-40 bg-white">
+      <p class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest">Active Stays</p>
+      <div id="kpi-active" class="font-display-lg text-display-lg text-primary">—</div>
+    </div>
+    <div class="editorial-border p-8 flex flex-col justify-between h-40 bg-white">
+      <p class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest">Total Income</p>
+      <div id="kpi-income" class="font-display-lg text-display-lg text-primary">—</div>
+    </div>
+    <div class="editorial-border p-8 flex flex-col justify-between h-40 bg-white">
+      <p class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest">Occupancy Rate</p>
+      <div id="kpi-occ" class="font-display-lg text-display-lg text-primary">—</div>
+    </div>
+  </section>
+
+  <!-- Visualization + narrative -->
+  <section class="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start mb-32">
+    <div class="lg:col-span-4 flex flex-col gap-8">
+      <h2 class="font-headline-md text-headline-md">Portfolio Insights</h2>
+      <div class="h-px bg-outline-variant w-16"></div>
+      <p class="font-body-lg text-on-surface-variant leading-relaxed italic" id="insight-text">
+        "Your portfolio metrics are loading…"
+      </p>
+      <div class="editorial-border p-6 bg-surface-container-low rounded-lg">
+        <h4 class="font-label-caps text-label-caps uppercase mb-4">Portfolio Health</h4>
+        <div class="flex flex-col gap-3">
+          <div class="flex justify-between font-ui-label text-ui-label">
+            <span class="text-tertiary">Occupancy</span>
+            <span id="health-occ" class="text-primary font-semibold">—</span>
+          </div>
+          <div class="w-full h-2 bg-surface-container-low rounded-full overflow-hidden">
+            <div id="occ-bar" class="chart-bar h-full bg-primary-container" style="width:0%"></div>
+          </div>
+          <div class="flex justify-between font-ui-label text-ui-label mt-2">
+            <span class="text-tertiary">Confirmed / Total</span>
+            <span id="health-conf" class="text-on-surface font-semibold">—</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lg:col-span-8">
+      <div class="bg-white p-10 editorial-border">
+        <h3 class="font-label-caps text-label-caps uppercase mb-8 text-center tracking-[0.3em]">Revenue Overview</h3>
+        <div id="chart-area" class="space-y-8">
+          <p class="text-center text-tertiary font-body-md py-8">Loading metrics…</p>
+        </div>
+        <div class="mt-8 flex justify-between font-label-caps text-label-caps text-tertiary">
+          <span>$0</span>
+          <span id="chart-mid">—</span>
+          <span id="chart-max">—</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quick actions -->
+  <section class="flex flex-col md:flex-row gap-gutter justify-center mb-20">
+    <a href="/my-properties.html" class="flex items-center gap-3 border border-outline-variant px-8 py-5 font-ui-label text-ui-label uppercase tracking-widest hover:bg-surface-container-low transition-colors">
+      <span class="material-symbols-outlined">home_work</span>
+      Manage Properties
+    </a>
+    <a href="/owner-reservations.html" class="flex items-center gap-3 border border-outline-variant px-8 py-5 font-ui-label text-ui-label uppercase tracking-widest hover:bg-surface-container-low transition-colors">
+      <span class="material-symbols-outlined">event_available</span>
+      View All Bookings
+    </a>
+  </section>
+
+</main>
+<div id="footer-container"></div>
+<script src="/js/app.js"></script>
+<script>
+  document.getElementById('nav-container').innerHTML = buildNav('dashboard');
+  document.getElementById('footer-container').innerHTML = sharedFooter;
+
+  if (!isLoggedIn() || (!isOwner() && !isAdmin())) {
+    window.location.href = isLoggedIn() ? '/index.html' : '/login.html';
+  }
+
+  async function loadMetrics() {
+    const start = document.getElementById('start-date').value;
+    const end = document.getElementById('end-date').value;
+    let qs = '';
+    if (start) qs += `?startDate=${start}`;
+    if (end) qs += (qs ? '&' : '?') + `endDate=${end}`;
+
+    try {
+      const m = await apiFetch('GET', '/dashboard/metrics' + qs);
+
+      document.getElementById('kpi-props').textContent = m.totalProperties;
+      document.getElementById('kpi-total').textContent = m.totalReservations;
+      document.getElementById('kpi-active').textContent = m.activeReservations;
+      document.getElementById('kpi-income').textContent = '$' + Number(m.totalIncome).toLocaleString('en-US', { maximumFractionDigits: 0 });
+      document.getElementById('kpi-occ').textContent = m.occupancyRate.toFixed(1) + '%';
+
+      document.getElementById('health-occ').textContent = m.occupancyRate.toFixed(1) + '%';
+      document.getElementById('occ-bar').style.width = Math.min(m.occupancyRate, 100) + '%';
+      document.getElementById('health-conf').textContent = `${m.activeReservations} / ${m.totalReservations}`;
+
+      // Insight text
+      const occStr = m.occupancyRate.toFixed(1);
+      document.getElementById('insight-text').textContent =
+        `"Your portfolio has ${m.totalProperties} propert${m.totalProperties === 1 ? 'y' : 'ies'} with ${m.totalReservations} total booking${m.totalReservations === 1 ? '' : 's'} and a ${occStr}% occupancy rate, generating $${Number(m.totalIncome).toLocaleString('en-US', { maximumFractionDigits: 0 })} in total revenue."`;
+
+      // Simple income bar chart (single value visualization)
+      const maxIncome = Number(m.totalIncome) || 1;
+      const chartHtml = `
+        <div class="space-y-3">
+          <div class="flex justify-between font-ui-label text-ui-label uppercase">
+            <span>Total Revenue</span>
+            <span class="text-primary">$${Number(m.totalIncome).toLocaleString('en-US', { maximumFractionDigits: 0 })}</span>
+          </div>
+          <div class="w-full h-8 bg-surface-container-low relative">
+            <div class="chart-bar h-full bg-primary-container" style="width:0%" data-target="100%"></div>
+          </div>
+        </div>
+        <div class="space-y-3">
+          <div class="flex justify-between font-ui-label text-ui-label uppercase">
+            <span>Active Bookings</span>
+            <span class="text-primary">${m.activeReservations}</span>
+          </div>
+          <div class="w-full h-8 bg-surface-container-low relative">
+            <div class="chart-bar h-full bg-secondary-container" style="width:0%" data-target="${m.totalReservations ? Math.round(m.activeReservations / m.totalReservations * 100) : 0}%"></div>
+          </div>
+        </div>
+        <div class="space-y-3">
+          <div class="flex justify-between font-ui-label text-ui-label uppercase">
+            <span>Occupancy</span>
+            <span class="text-primary">${m.occupancyRate.toFixed(1)}%</span>
+          </div>
+          <div class="w-full h-8 bg-surface-container-low relative">
+            <div class="chart-bar h-full bg-tertiary-container" style="width:0%" data-target="${Math.min(m.occupancyRate, 100)}%"></div>
+          </div>
+        </div>`;
+
+      document.getElementById('chart-area').innerHTML = chartHtml;
+      document.getElementById('chart-max').textContent = '$' + Number(m.totalIncome).toLocaleString('en-US', { maximumFractionDigits: 0 });
+      document.getElementById('chart-mid').textContent = '$' + (Number(m.totalIncome) / 2).toLocaleString('en-US', { maximumFractionDigits: 0 });
+
+      // Animate bars
+      setTimeout(() => {
+        document.querySelectorAll('.chart-bar[data-target]').forEach(bar => {
+          bar.style.width = bar.dataset.target;
+        });
+      }, 100);
+
+    } catch(err) { showToast(err.message, true); }
+  }
+
+  document.getElementById('apply-btn').addEventListener('click', loadMetrics);
+
+  document.getElementById('export-btn').addEventListener('click', async () => {
+    const start = document.getElementById('start-date').value;
+    const end = document.getElementById('end-date').value;
+    let qs = '';
+    if (start) qs += `?startDate=${start}`;
+    if (end) qs += (qs ? '&' : '?') + `endDate=${end}`;
+    try {
+      const blob = await apiFetch('GET', '/dashboard/export' + qs);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'atelier-report.xlsx';
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('Report downloaded');
+    } catch(err) { showToast(err.message, true); }
+  });
+
+  loadMetrics();
+</script>
+</body>
+</html>

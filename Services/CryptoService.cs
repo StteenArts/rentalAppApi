@@ -5,12 +5,23 @@ namespace RentalApp.Services;
 
 public class CryptoService
 {
-    private readonly string key = "12345678901234567890123456789012"; // 32 chars
+    private readonly byte[] key;
+
+    public CryptoService(IConfiguration configuration)
+    {
+        var aesKey = configuration["Crypto:AesKey"];
+
+        if (string.IsNullOrEmpty(aesKey) || Encoding.UTF8.GetByteCount(aesKey) != 32)
+            throw new InvalidOperationException(
+                "Crypto:AesKey must be configured with a 32-byte value (dotnet user-secrets in dev, env var in containers).");
+
+        key = Encoding.UTF8.GetBytes(aesKey);
+    }
 
     public byte[] Encrypt(byte[] data)
     {
         using var aes = Aes.Create();
-        aes.Key = Encoding.UTF8.GetBytes(key);
+        aes.Key = key;
         aes.GenerateIV();
 
         using var encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
@@ -29,7 +40,7 @@ public class CryptoService
     public byte[] Decrypt(byte[] data)
     {
         using var aes = Aes.Create();
-        aes.Key = Encoding.UTF8.GetBytes(key);
+        aes.Key = key;
 
         var iv = new byte[16];
         Array.Copy(data, iv, 16);

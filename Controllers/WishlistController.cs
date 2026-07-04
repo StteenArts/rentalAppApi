@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using rentalApp.Extensions;
 using rentalApp.Models.Dtos;
 using rentalApp.Services;
 
@@ -18,7 +19,7 @@ public class WishlistController : ControllerBase
     [HttpPost("toggle")]
     public async Task<IActionResult> Toggle(ToggleWishlistDto dto)
     {
-        var userId = Guid.NewGuid(); // luego Auth real
+        var userId = User.GetUserId();
 
         var result = await _service.ToggleWishlist(userId, dto);
 
@@ -27,11 +28,11 @@ public class WishlistController : ControllerBase
             added = result
         });
     }
-    
+
     [HttpGet]
     public async Task<IActionResult> Get()
     {
-        var userId = Guid.NewGuid();
+        var userId = User.GetUserId();
 
         var list = await _service.GetWishlist(userId);
 
@@ -41,7 +42,7 @@ public class WishlistController : ControllerBase
     [HttpDelete("{propertyId}")]
     public async Task<IActionResult> Remove(Guid propertyId)
     {
-        var userId = Guid.NewGuid();
+        var userId = User.GetUserId();
 
         await _service.Remove(userId, propertyId);
 

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Login | Atelier Dwelling</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@100..900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "tertiary": "#615c54","inverse-primary": "#ffb5a1","surface-container": "#f0eded",
+          "on-secondary-fixed": "#161e09","secondary": "#586247","on-primary": "#ffffff",
+          "surface-bright": "#fcf9f8","surface-container-low": "#f6f3f2","surface": "#fcf9f8",
+          "primary-container": "#b35c44","inverse-on-surface": "#f3f0f0","on-error": "#ffffff",
+          "on-primary-fixed-variant": "#79301b","primary-fixed": "#ffdbd1","error": "#ba1a1a",
+          "primary": "#94442e","on-surface": "#1b1c1c","primary-fixed-dim": "#ffb5a1",
+          "secondary-container": "#dce7c5","error-container": "#ffdad6","secondary-fixed-dim": "#c0cbaa",
+          "background": "#fcf9f8","on-tertiary-container": "#fffcff","on-surface-variant": "#55433e",
+          "on-tertiary": "#ffffff","on-secondary-container": "#5e684d","on-primary-container": "#fffcff",
+          "on-tertiary-fixed-variant": "#4b463f","surface-variant": "#e4e2e1","surface-container-highest": "#e4e2e1",
+          "on-background": "#1b1c1c","tertiary-fixed": "#e9e1d7","inverse-surface": "#303030",
+          "on-primary-fixed": "#3b0900","outline": "#88726d","surface-dim": "#dcd9d9",
+          "surface-tint": "#974730","on-secondary-fixed-variant": "#414a31","on-secondary": "#ffffff",
+          "tertiary-fixed-dim": "#cdc5bc","outline-variant": "#dbc1ba","surface-container-high": "#eae7e7",
+          "secondary-fixed": "#dce7c5","on-tertiary-fixed": "#1e1b15","on-error-container": "#93000a",
+          "surface-container-lowest": "#ffffff","tertiary-container": "#7a746c"
+        },
+        "borderRadius": {"DEFAULT": "0.125rem","lg": "0.25rem","xl": "0.5rem","full": "0.75rem"},
+        "spacing": {"unit": "8px","container-max": "1280px","gutter": "24px","margin-mobile": "20px","margin-desktop": "64px"},
+        "fontFamily": {"display-lg": ["Playfair Display"],"body-lg": ["Inter"],"body-md": ["Inter"],"headline-md": ["Playfair Display"],"ui-label": ["Inter"],"label-caps": ["Inter"],"headline-sm": ["Playfair Display"],"display-lg-mobile": ["Playfair Display"]},
+        "fontSize": {
+          "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "400"}],
+          "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+          "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+          "headline-md": ["32px", {"lineHeight": "1.2", "fontWeight": "400"}],
+          "ui-label": ["14px", {"lineHeight": "1.2", "fontWeight": "500"}],
+          "label-caps": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.15em", "fontWeight": "500"}],
+          "headline-sm": ["24px", {"lineHeight": "1.3", "fontWeight": "400"}],
+          "display-lg-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "400"}]
+        }
+      },
+    },
+  }
+</script>
+<style>
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; display: inline-block; line-height: 1; vertical-align: middle; }
+  .bone-surface { background-color: #FAF6F0; }
+  .fine-sand-border { border-color: #E5DDD3; }
+  .terracotta-button { background-color: #B35C44; transition: opacity 0.3s ease; }
+  .terracotta-button:hover { opacity: 0.9; }
+  .editorial-shadow { border: 1px solid #E5DDD3; }
+  input:focus { outline: none !important; border-color: #94442e !important; box-shadow: none !important; }
+</style>
+</head>
+<body class="bg-background text-on-surface font-body-md overflow-hidden">
+<main class="flex min-h-screen w-full">
+  <!-- Left: Editorial Image -->
+  <section class="hidden lg:block lg:w-1/2 relative overflow-hidden h-screen">
+    <div class="absolute inset-0 z-10 bg-black/5"></div>
+    <div class="w-full h-full bg-cover bg-center transition-transform duration-[10s] hover:scale-105" style="background-image: url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1200&q=80')"></div>
+    <div class="absolute bottom-margin-desktop left-margin-desktop z-20 max-w-md">
+      <h1 class="font-display-lg text-display-lg text-white mb-4 drop-shadow-sm">Atelier Dwelling</h1>
+      <p class="font-body-lg text-white/90 italic">"Curating architectural intentionality for the discerning traveler."</p>
+    </div>
+  </section>
+  <!-- Right: Login Form -->
+  <section class="w-full lg:w-1/2 flex flex-col justify-center items-center px-margin-mobile md:px-20 bone-surface relative">
+    <div class="lg:hidden absolute top-12 left-margin-mobile">
+      <span class="font-headline-md text-headline-md text-primary">Atelier Dwelling</span>
+    </div>
+    <div class="w-full max-w-[420px] py-12">
+      <div class="mb-12">
+        <h2 class="font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface mb-2">Welcome back</h2>
+        <p class="font-body-md text-tertiary">Please enter your credentials to access your architectural retreat.</p>
+      </div>
+      <form id="login-form" class="space-y-10">
+        <div class="space-y-6">
+          <div class="relative group">
+            <label class="block font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest mb-3" for="email">Email Address</label>
+            <input class="w-full bg-transparent border-b fine-sand-border py-3 px-0 font-body-md focus:border-primary transition-colors text-on-surface placeholder:text-surface-variant" id="email" placeholder="name@example.com" required type="email"/>
+          </div>
+          <div class="relative group">
+            <div class="flex justify-between items-center mb-3">
+              <label class="block font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest" for="password">Password</label>
+            </div>
+            <div class="relative">
+              <input class="w-full bg-transparent border-b fine-sand-border py-3 px-0 font-body-md focus:border-primary transition-colors text-on-surface" id="password" required type="password"/>
+              <button class="absolute right-0 top-1/2 -translate-y-1/2 text-tertiary/60 hover:text-primary" type="button" id="toggle-pass">
+                <span class="material-symbols-outlined text-[20px]">visibility</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div id="form-error" class="hidden text-error text-sm font-ui-label bg-error-container px-4 py-3 rounded"></div>
+        <div class="space-y-8 pt-4">
+          <button class="w-full terracotta-button text-on-primary font-ui-label text-ui-label py-5 px-6 rounded-none tracking-widest uppercase transition-all flex justify-center items-center gap-2 group" type="submit" id="submit-btn">
+            Login
+            <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+          </button>
+          <div class="text-center">
+            <p class="font-body-md text-on-surface-variant">
+              Don't have an account?
+              <a class="text-primary font-semibold hover:underline underline-offset-4 ml-1" href="/register.html">Register</a>
+            </p>
+          </div>
+        </div>
+      </form>
+    </div>
+    <footer class="absolute bottom-8 left-0 right-0 px-margin-mobile md:px-20 flex justify-between items-center w-full">
+      <p class="font-label-caps text-[10px] text-surface-variant uppercase tracking-widest">© 2025 Atelier Dwelling</p>
+      <div class="flex gap-6">
+        <a class="font-label-caps text-[10px] text-surface-variant hover:text-primary uppercase tracking-widest transition-colors" href="#">Privacy</a>
+        <a class="font-label-caps text-[10px] text-surface-variant hover:text-primary uppercase tracking-widest transition-colors" href="#">Support</a>
+      </div>
+    </footer>
+  </section>
+</main>
+<script src="/js/app.js"></script>
+<script>
+  // Redirect if already logged in
+  if (isLoggedIn()) {
+    const u = getUser();
+    window.location.href = (u?.role === 'Owner' || u?.role === 'Admin') ? '/my-properties.html' : '/index.html';
+  }
+
+  document.getElementById('toggle-pass').addEventListener('click', () => {
+    const p = document.getElementById('password');
+    const icon = document.querySelector('#toggle-pass span');
+    p.type = p.type === 'password' ? 'text' : 'password';
+    icon.textContent = p.type === 'password' ? 'visibility' : 'visibility_off';
+  });
+
+  document.getElementById('login-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('submit-btn');
+    const errDiv = document.getElementById('form-error');
+    errDiv.classList.add('hidden');
+    btn.disabled = true;
+    btn.innerHTML = 'Logging in...';
+    try {
+      const data = await apiFetch('POST', '/auth/login', {
+        email: document.getElementById('email').value,
+        password: document.getElementById('password').value
+      });
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user || data));
+      const user = data.user || data;
+      const role = user.role;
+      window.location.href = (role === 'Owner' || role === 'Admin') ? '/my-properties.html' : '/index.html';
+    } catch(err) {
+      errDiv.textContent = err.message || 'Invalid credentials. Please try again.';
+      errDiv.classList.remove('hidden');
+      btn.disabled = false;
+      btn.innerHTML = 'Login <span class="material-symbols-outlined text-[18px]">arrow_forward</span>';
+    }
+  });
+</script>
+</body>
+</html>

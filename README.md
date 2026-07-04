@@ -1,131 +1,112 @@
-# 🏡 RentalApp - Plataforma de Reservas
+# 🏡 RentalApp API
 
-Sistema backend desarrollado en ASP.NET Core + PostgreSQL + Docker que permite la gestión de propiedades, reservas, validación de identidad (KYC), sistema de notificaciones y panel de métricas para propietarios.
+Backend REST puro en ASP.NET Core (.NET 10) + PostgreSQL para una plataforma de rentas cortas tipo Airbnb: propiedades, reservas, favoritos, verificación de identidad (KYC, simulada), notificaciones (simuladas) y dashboards con export a Excel.
 
----
-
-# 📌 1. Requisitos Previos
-
-Antes de ejecutar el proyecto, asegúrate de tener instalado:
-
-- .NET SDK 8 o superior
-- Docker Desktop / Docker Engine
-- Docker Compose
-- Git (opcional)
-- Postman o Swagger para pruebas
+Arquitectura: monolito modular por capas `Controllers → Services → Data (EF Core) → PostgreSQL`. Sin frontend propio: pensado para que un equipo de frontend consuma la API directamente.
 
 ---
 
-# 🚀 2. Levantar el proyecto con Docker
+## 1. Requisitos previos
 
-El proyecto está completamente containerizado con API + Base de Datos PostgreSQL.
+- Docker + Docker Compose
+- (Opcional, para desarrollo local sin Docker) .NET SDK 10
 
-## 📦 Paso 1: Clonar el repositorio
+---
+
+## 2. Configuración de secretos
+
+Ningún secreto (password de Postgres, clave de firma JWT, clave AES de cifrado KYC) está hardcodeado en el código ni en `appsettings.json`.
+
+### Con Docker
 
 ```bash
-git clone <URL_DEL_REPOSITORIO>
-cd rentalApp
-
+cp .env.example .env
+# edita .env con valores propios si quieres (los de ejemplo funcionan para desarrollo)
+docker compose up --build
 ```
 
-# Paso 2: Levantar contenedores
+### Desarrollo local sin Docker
 
 ```bash
-docker-compose up --build
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Host=localhost;Port=5432;Database=RentalAppDb;Username=postgres;Password=postgres"
+dotnet user-secrets set "Jwt:Key" "un-secreto-largo-de-desarrollo"
+dotnet user-secrets set "Crypto:AesKey" "12345678901234567890123456789012"
+dotnet run
 ```
 
-**⚙️ Servicios incluidos
-API ASP.NET Core → http://localhost:5000
-Swagger UI → http://localhost:5000/swagger
-PostgreSQL → localhost:5432**
+Las migraciones se aplican automáticamente al iniciar la aplicación (`db.Database.Migrate()` en `Program.cs`), no se requieren pasos manuales.
 
-- Aplicar migraciones: 
-*dotnet ef database update*
+---
 
+## 3. Servicios expuestos (Docker)
 
-## Arquitectura utilizada
+| Servicio | URL |
+|---|---|
+| API | http://localhost:5000 |
+| Swagger UI (solo en Development) | http://localhost:5000/swagger |
+| PostgreSQL | localhost:5432 |
 
-El proyecto fue desarrollado bajo una arquitectura monolítica modular con separación por capas:
+---
 
-Controllers → Services → Data (EF Core) → PostgreSQL
-**Paquetes intalados en este proyecto:**
+## 4. Autenticación y roles
 
-- dotnet add package Microsoft.EntityFrameworkCore
-- dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL
-- dotnet add package Microsoft.EntityFrameworkCore.Design
-- dotnet add package Microsoft.EntityFrameworkCore.Tools
+JWT propio (email + password, sin login social). Roles: `Guest`, `Owner`, `Admin`.
 
-- dotnet add package Swashbuckle.AspNetCore
-- dotnet add package FluentValidation.AspNetCore
-- dotnet add package ClosedXML
+- El registro público solo permite `Guest` u `Owner` (rol `Admin` se provisiona manualmente en la base de datos, no vía self-registration).
+- Todos los endpoints requieren un Bearer token **por defecto**, salvo los explícitamente públicos (`[AllowAnonymous]`): listar/ver/buscar propiedades.
+- El id del usuario autenticado siempre se toma de los claims del JWT, nunca de parámetros enviados por el cliente.
 
-# Prevención de doble reserva (Double Booking)
+```
+POST /api/auth/register   Body: { fullName, email, password, role? }   -> 201 { id, fullName, email, role }
+POST /api/auth/login      Body: { email, password }                   -> 200 { token, expiresAt, user }
+GET  /api/auth/me         [Authorize]                                 -> 200 { id, fullName, email, role }
+```
 
-Se implementó una validación de solapamiento de fechas,
-Esto garantiza que no existan reservas conflictivas sobre la misma propiedad:
+---
 
-*(checkIn < existing.CheckOut && checkOut > existing.CheckIn)*
+## 5. Endpoints principales
 
-# Sistema de autenticación diferida
+```
+api/auth            register, login, me
+api/properties       GET (público), GET/{id} (público), GET/search (público),
+                      GET/mine [Owner], POST [Owner|Admin], PUT/{id}, DELETE/{id} (dueño o Admin),
+                      POST/{id}/images, DELETE/{id}/images/{imageId} (dueño o Admin)
+api/reservations     POST (crea, exige KYC aprobado), GET/my, GET/owner [Owner|Admin], POST/{id}/cancel
+api/wishlist         POST/toggle, GET, DELETE/{propertyId}
+api/kyc              POST/upload, GET/me, DELETE/{id}
+api/notifications    GET (mías), PUT/read/{id}
+api/dashboard        GET/metrics [Owner|Admin] (?startDate&endDate), GET/export [Owner|Admin] (?propertyId&startDate&endDate)
+```
 
-El sistema permite navegación anónima y solo solicita autenticación cuando el usuario:
+Todas las respuestas de error usan `ProblemDetails` (JSON consistente), nunca stack traces crudos.
 
-Realiza una reserva
-Guarda favoritos
-Ejecuta acciones críticas
+---
 
-Esto mejora la experiencia de usuario y reduce fricción en exploración.
+## 6. Reglas de negocio implementadas
 
-# KYC con cifrado de datos
+- **No double-booking**: una propiedad no puede tener dos reservas activas con fechas solapadas.
+- **Horarios fijos**: check-in 2:00 PM, check-out 12:00 PM, sin importar lo que envíe el cliente.
+- **Navegación anónima**: catálogo y búsqueda de propiedades no requieren login; reservar, pagar o guardar favoritos sí.
+- **KYC obligatorio**: no se puede reservar sin al menos un documento KYC con estado `Approved`.
+- **KYC cifrado**: los documentos se cifran con AES antes de guardarse y se sobrescriben en memoria/DB al eliminarse.
+- **CheckIn no puede ser pasado**: `CreateReservationDtoValidator` rechaza reservas con `CheckIn` anterior a la fecha actual (UTC).
 
-Los documentos de identidad son:
+---
 
-Cifrados usando AES antes de almacenarse
-Eliminados de memoria después del procesamiento
+## 7. Funcionalidades simuladas (marcadas intencionalmente, no son bugs)
 
-Esto garantiza protección de datos sensibles en reposo.
+- **Veredicto KYC**: `Services/KycService.cs` simula una respuesta de OCR/IA (aprueba/rechaza según extensión y tamaño de archivo, y genera datos de identidad ficticios). Preparado para reemplazarse por una integración real sin tocar el resto del flujo (`KycController` ya llama a esta pieza de forma aislada).
+- **Notificaciones**: `Services/EmailService.cs` imprime el "envío" de correo por consola; `Services/NotificationService.cs` sí persiste la notificación in-app real en la base de datos.
+- **Pagos**: el modelo `Payment` existe en el dominio pero la integración con una pasarela real no está implementada (fuera del alcance de esta pasada de correcciones).
+- **Almacenamiento de imágenes**: las imágenes de propiedades y los documentos KYC se guardan en disco local (`wwwroot/uploads` y la base de datos, respectivamente), no en un bucket S3.
 
-# Sistema de notificaciones omnicanal
+---
 
-Se implementó un motor de notificaciones capaz de:
+## 8. Notas técnicas relevantes
 
-Enviar notificaciones internas (BD)
-Simular envío de correos electrónicos
-Dispararse desde eventos del sistema (reservas, KYC, etc.)
-# Exportación de reportes
-
-Se implementó generación de reportes en Excel (.xlsx) usando ClosedXML, permitiendo al propietario:
-
-Exportar reservas
-Analizar ingresos
-Visualizar ocupación
-# Dashboard de métricas
-
-Se expone un endpoint que calcula:
-
-Total de propiedades
-Total de reservas
-Ingresos acumulados
-
-## La solución permite:
-
-Gestión completa de propiedades
-Sistema de reservas seguro
-Validación de identidad (KYC)
-Notificaciones automáticas
-Reportes financieros
-Panel de control para propietarios
-
-
-# NOTAS FINALES
-El sistema fue diseñado para ser escalable, 
-desacoplado y fácilmente extensible hacia una 
-arquitectura de microservicios en el futuro.
-
-Modelo realacional simple database rentalApp:
-User 1 → N Property
-User 1 → N Reservation
-Property 1 → N Reservation
-User N ↔ N Property (Wishlist)
-User 1 → N Notification
-
+- Passwords con BCrypt (no SHA-256).
+- CORS configurable vía `Cors:AllowedOrigins` en `appsettings.json`.
+- FluentValidation registrado y activo (`Program.cs` + `Models/Dtos/Validators/`).
+- Swagger solo disponible en `Development`.
+- `.dockerignore` excluye `bin/`, `obj/`, `.git/`, `.idea/`, `.vs/`, `.env` y `*.user` del build context de Docker.
+- Proyecto es Web API pura: no incluye el scaffold MVC de vistas Razor (`HomeController`/`Views`) que traía la plantilla por defecto.

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using rentalApp.Data;
+using rentalApp.Exceptions;
 using rentalApp.Models;
 using rentalApp.Models.Dtos;
 using rentalApp.Models.Enum;
@@ -17,28 +18,38 @@ public class ReservationService : IReservationService
 
     public async Task<Reservation> CreateReservation(Guid userId, CreateReservationDto dto)
     {
-        // Search Property
         var property = await _context.Properties
             .FirstOrDefaultAsync(p => p.Id == dto.PropertyId);
 
         if (property == null)
-            throw new Exception("Property not found");
+            throw new DomainException(StatusCodes.Status404NotFound, "Property not found");
 
-        // Validate (double booking)
+        var isKycApproved = await _context.KycValidations
+            .AnyAsync(k => k.UserId == userId && k.Status == KycStatus.Approved);
+
+        if (!isKycApproved)
+            throw new DomainException(StatusCodes.Status403Forbidden, "You must complete KYC verification before making a reservation");
+
+        // Force el rango de fechas a horarios estándar de check-in/check-out antes de validar solapamiento
+        // Se normaliza a UTC porque Npgsql exige DateTimeKind.Utc para columnas timestamptz
+        var checkIn = DateTime.SpecifyKind(dto.CheckIn.Date.AddHours(14), DateTimeKind.Utc);   // 2 PM
+        var checkOut = DateTime.SpecifyKind(dto.CheckOut.Date.AddHours(12), DateTimeKind.Utc); // 12 PM
+
+        if (checkOut <= checkIn)
+            throw new DomainException(StatusCodes.Status400BadRequest, "CheckOut must be after CheckIn");
+
         var hasConflict = await _context.Reservations.AnyAsync(r =>
             r.PropertyId == dto.PropertyId &&
-            r.CheckIn < dto.CheckOut &&
-            dto.CheckIn < r.CheckOut
+            r.Status != ReservationStatus.Cancelled &&
+            r.CheckIn < checkOut &&
+            checkIn < r.CheckOut
         );
 
         if (hasConflict)
-            throw new Exception("Property already booked in these dates");
+            throw new DomainException(StatusCodes.Status409Conflict, "Property already booked in these dates");
 
-        //  Force Hourly estándar
-        var checkIn = dto.CheckIn.Date.AddHours(14);   // 2 PM
-        var checkOut = dto.CheckOut.Date.AddHours(12); // 12 PM
+        var nights = (dto.CheckOut.Date - dto.CheckIn.Date).Days;
 
-        //  create reservation
         var reservation = new Reservation
         {
             Id = Guid.NewGuid(),
@@ -47,20 +58,45 @@ public class ReservationService : IReservationService
             CheckIn = checkIn,
             CheckOut = checkOut,
             Status = ReservationStatus.Confirmed,
-            TotalAmount = property.PricePerNight * (checkOut - checkIn).Days
+            TotalAmount = property.PricePerNight * nights
         };
 
-        //  save en DB
         _context.Reservations.Add(reservation);
         await _context.SaveChangesAsync();
 
         return reservation;
     }
-    
+
     public async Task<List<Reservation>> GetByUserId(Guid userId)
     {
         return await _context.Reservations
             .Where(x => x.UserId == userId)
             .ToListAsync();
+    }
+
+    public async Task<List<Reservation>> GetByOwnerId(Guid ownerId, bool isAdmin)
+    {
+        return await _context.Reservations
+            .Where(r => isAdmin || r.Property!.OwnerId == ownerId)
+            .ToListAsync();
+    }
+
+    public async Task<Reservation> CancelReservation(Guid userId, Guid reservationId, bool isAdmin)
+    {
+        var reservation = await _context.Reservations.FindAsync(reservationId);
+
+        if (reservation == null)
+            throw new DomainException(StatusCodes.Status404NotFound, "Reservation not found");
+
+        if (reservation.UserId != userId && !isAdmin)
+            throw new DomainException(StatusCodes.Status403Forbidden, "You do not own this reservation");
+
+        if (reservation.Status == ReservationStatus.Cancelled)
+            throw new DomainException(StatusCodes.Status400BadRequest, "Reservation is already cancelled");
+
+        reservation.Status = ReservationStatus.Cancelled;
+        await _context.SaveChangesAsync();
+
+        return reservation;
     }
 }

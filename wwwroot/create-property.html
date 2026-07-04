@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Create Property | Atelier Dwelling</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@100..900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "tertiary": "#615c54","inverse-primary": "#ffb5a1","surface-container": "#f0eded",
+          "on-secondary-fixed": "#161e09","secondary": "#586247","on-primary": "#ffffff",
+          "surface-bright": "#fcf9f8","surface-container-low": "#f6f3f2","surface": "#fcf9f8",
+          "primary-container": "#b35c44","inverse-on-surface": "#f3f0f0","on-error": "#ffffff",
+          "on-primary-fixed-variant": "#79301b","primary-fixed": "#ffdbd1","error": "#ba1a1a",
+          "primary": "#94442e","on-surface": "#1b1c1c","primary-fixed-dim": "#ffb5a1",
+          "secondary-container": "#dce7c5","error-container": "#ffdad6","secondary-fixed-dim": "#c0cbaa",
+          "background": "#fcf9f8","on-tertiary-container": "#fffcff","on-surface-variant": "#55433e",
+          "on-tertiary": "#ffffff","on-secondary-container": "#5e684d","on-primary-container": "#fffcff",
+          "on-tertiary-fixed-variant": "#4b463f","surface-variant": "#e4e2e1","surface-container-highest": "#e4e2e1",
+          "on-background": "#1b1c1c","tertiary-fixed": "#e9e1d7","inverse-surface": "#303030",
+          "on-primary-fixed": "#3b0900","outline": "#88726d","surface-dim": "#dcd9d9",
+          "surface-tint": "#974730","on-secondary-fixed-variant": "#414a31","on-secondary": "#ffffff",
+          "tertiary-fixed-dim": "#cdc5bc","outline-variant": "#dbc1ba","surface-container-high": "#eae7e7",
+          "secondary-fixed": "#dce7c5","on-tertiary-fixed": "#1e1b15","on-error-container": "#93000a",
+          "surface-container-lowest": "#ffffff","tertiary-container": "#7a746c"
+        },
+        "borderRadius": {"DEFAULT": "0.125rem","lg": "0.25rem","xl": "0.5rem","full": "0.75rem"},
+        "spacing": {"unit": "8px","container-max": "1280px","gutter": "24px","margin-mobile": "20px","margin-desktop": "64px"},
+        "fontFamily": {"display-lg": ["Playfair Display"],"body-lg": ["Inter"],"body-md": ["Inter"],"headline-md": ["Playfair Display"],"ui-label": ["Inter"],"label-caps": ["Inter"],"headline-sm": ["Playfair Display"],"display-lg-mobile": ["Playfair Display"]},
+        "fontSize": {
+          "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "400"}],
+          "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+          "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+          "headline-md": ["32px", {"lineHeight": "1.2", "fontWeight": "400"}],
+          "ui-label": ["14px", {"lineHeight": "1.2", "fontWeight": "500"}],
+          "label-caps": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.15em", "fontWeight": "500"}],
+          "headline-sm": ["24px", {"lineHeight": "1.3", "fontWeight": "400"}],
+          "display-lg-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "400"}]
+        }
+      },
+    },
+  }
+</script>
+<style>
+  body { background-color: #fcf9f8; color: #1b1c1c; -webkit-font-smoothing: antialiased; }
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24; vertical-align: middle; }
+  .editorial-input { border-bottom: 1px solid #dbc1ba; transition: border-color 0.3s ease; }
+  .editorial-input:focus { outline: none; border-bottom-color: #94442e; }
+  .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+  .custom-scrollbar::-webkit-scrollbar-thumb { background: #dbc1ba; }
+</style>
+</head>
+<body class="bg-surface font-body-md text-body-md">
+<div id="nav-container"></div>
+<main class="max-w-container-max mx-auto px-margin-desktop py-20">
+  <div class="max-w-3xl mx-auto">
+    <!-- Breadcrumbs -->
+    <div class="mb-12 flex items-center gap-2 text-label-caps font-label-caps text-tertiary uppercase tracking-widest">
+      <a class="hover:text-primary transition-colors" href="/my-properties.html">My Properties</a>
+      <span class="text-[8px] opacity-40">•</span>
+      <span class="text-on-surface" id="page-label">Create Property</span>
+    </div>
+    <h1 class="font-display-lg text-display-lg mb-4" id="page-title">Refine Your Dwelling</h1>
+    <p class="font-body-lg text-body-lg text-tertiary mb-16 max-w-xl">
+      Curate the details of your architectural retreat.
+    </p>
+    <form class="space-y-20" id="property-form">
+      <!-- Section 1: Basic Information -->
+      <section class="grid grid-cols-1 md:grid-cols-12 gap-gutter items-start">
+        <div class="md:col-span-4">
+          <h2 class="font-headline-sm text-headline-sm text-on-surface mb-2">The Essence</h2>
+          <p class="text-ui-label font-ui-label text-tertiary">Defining the identity of your architectural space.</p>
+        </div>
+        <div class="md:col-span-8 space-y-12">
+          <div class="relative">
+            <label class="block font-label-caps text-label-caps text-tertiary uppercase mb-4" for="title">Property Title</label>
+            <input class="w-full bg-transparent editorial-input py-3 font-headline-md text-headline-md placeholder:text-surface-variant" id="title" placeholder="The Concrete Pavilion" required type="text"/>
+          </div>
+          <div class="grid grid-cols-2 gap-gutter">
+            <div class="relative">
+              <label class="block font-label-caps text-label-caps text-tertiary uppercase mb-4" for="city">City / Location</label>
+              <input class="w-full bg-transparent editorial-input py-2 font-body-md text-body-md placeholder:text-surface-variant" id="city" placeholder="Copenhagen, Denmark" required type="text"/>
+            </div>
+            <div class="relative">
+              <label class="block font-label-caps text-label-caps text-tertiary uppercase mb-4" for="price">Price per Night ($)</label>
+              <input class="w-full bg-transparent editorial-input py-2 font-body-md text-body-md placeholder:text-surface-variant" id="price" placeholder="450" required type="number" min="0" step="0.01"/>
+            </div>
+          </div>
+          <div class="relative">
+            <label class="block font-label-caps text-label-caps text-tertiary uppercase mb-4" for="description">The Narrative (Description)</label>
+            <textarea class="w-full bg-transparent border border-outline-variant rounded-lg p-6 font-body-md text-body-md placeholder:text-surface-variant focus:outline-none focus:border-primary custom-scrollbar resize-none" id="description" placeholder="Describe the interplay of light and material within the space..." rows="6"></textarea>
+          </div>
+          <div id="form-error" class="hidden text-error text-sm font-ui-label bg-error-container px-4 py-3 rounded"></div>
+        </div>
+      </section>
+      <hr class="border-outline-variant"/>
+      <!-- Publish Action -->
+      <div class="pt-10 flex flex-col md:flex-row items-center justify-between gap-gutter">
+        <a href="/my-properties.html" class="font-ui-label text-ui-label text-tertiary hover:text-on-surface transition-colors">Cancel</a>
+        <button class="bg-primary-container text-white font-ui-label text-ui-label px-12 py-4 rounded-full hover:brightness-110 transition-all" type="submit" id="submit-btn">
+          Publish Property
+        </button>
+      </div>
+    </form>
+
+    <!-- Image Upload Section (shown after creation or in edit mode) -->
+    <div id="images-section" class="hidden mt-20 space-y-8">
+      <hr class="border-outline-variant"/>
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-gutter items-start" id="images-anchor">
+        <div class="md:col-span-4">
+          <h2 class="font-headline-sm text-headline-sm text-on-surface mb-2">Visual Narrative</h2>
+          <p class="text-ui-label font-ui-label text-tertiary">High-resolution imagery that captures the soul of the dwelling.</p>
+        </div>
+        <div class="md:col-span-8 space-y-8">
+          <div class="border-2 border-dashed border-outline-variant bg-surface-container-low hover:bg-surface-container-high transition-colors cursor-pointer rounded-xl flex flex-col items-center justify-center py-16 px-10 text-center group" id="img-drop-area">
+            <div class="w-16 h-16 rounded-full bg-surface mb-4 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+              <span class="material-symbols-outlined text-4xl">add_photo_alternate</span>
+            </div>
+            <h3 class="font-headline-sm text-headline-sm mb-2">Upload Images</h3>
+            <p class="text-tertiary text-sm mb-4">JPEG, PNG (Max 10MB each)</p>
+            <input accept="image/*" class="hidden" id="img-file-input" type="file" multiple/>
+            <button class="border border-primary text-primary font-ui-label text-ui-label px-6 py-2 rounded-full hover:bg-primary hover:text-white transition-all" type="button" id="img-browse-btn">Browse Files</button>
+          </div>
+          <div class="grid grid-cols-3 gap-4" id="images-grid"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+<div id="footer-container"></div>
+<script src="/js/app.js"></script>
+<script>
+  if (!isLoggedIn()) window.location.href = '/login.html';
+  if (!isOwner() && !isAdmin()) window.location.href = '/index.html';
+
+  document.getElementById('nav-container').innerHTML = buildNav('my-properties');
+  document.getElementById('footer-container').innerHTML = sharedFooter;
+
+  const params = new URLSearchParams(location.search);
+  const editId = params.get('id');
+  const isEdit = !!editId;
+  let propertyId = editId;
+
+  if (isEdit) {
+    document.getElementById('page-label').textContent = 'Edit Property';
+    document.getElementById('page-title').textContent = 'Refine Your Dwelling';
+    document.getElementById('submit-btn').textContent = 'Save Changes';
+    loadPropertyForEdit();
+  }
+
+  const PLACEHOLDER = 'https://images.unsplash.com/photo-1449844908441-8829872d2607?w=800&q=80';
+
+  async function loadPropertyForEdit() {
+    try {
+      const p = await apiFetch('GET', `/properties/${editId}`);
+      document.getElementById('title').value = p.title || '';
+      document.getElementById('city').value = p.city || '';
+      document.getElementById('price').value = p.pricePerNight || '';
+      document.getElementById('description').value = p.description || '';
+      showImagesSection(editId, p.images || []);
+    } catch(err) { showToast(err.message, true); }
+  }
+
+  function showImagesSection(pid, images) {
+    document.getElementById('images-section').classList.remove('hidden');
+    renderImages(images);
+    setupImageUpload(pid);
+    // Scroll to images if hash
+    if (location.hash === '#images') {
+      setTimeout(() => document.getElementById('images-anchor').scrollIntoView({ behavior: 'smooth' }), 300);
+    }
+  }
+
+  function renderImages(images) {
+    const grid = document.getElementById('images-grid');
+    grid.innerHTML = '';
+    if (!images || !images.length) return;
+    images.forEach(img => {
+      const div = document.createElement('div');
+      div.className = 'relative aspect-square group';
+      div.innerHTML = `
+        <div class="absolute inset-0 bg-cover bg-center rounded-lg border border-outline-variant shadow-sm" style="background-image: url('${img.url || PLACEHOLDER}')">
+          ${img.isMain ? '<div class="absolute top-2 left-2 bg-primary text-white text-[10px] font-label-caps uppercase px-2 py-1 rounded-sm">Main</div>' : ''}
+        </div>
+        <div class="absolute inset-0 bg-on-surface/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+          <button class="del-img-btn text-white hover:text-error transition-colors" data-imgid="${img.id}" type="button">
+            <span class="material-symbols-outlined">delete</span>
+          </button>
+        </div>`;
+      grid.appendChild(div);
+      div.querySelector('.del-img-btn')?.addEventListener('click', async (e) => {
+        const imgId = e.currentTarget.dataset.imgid;
+        try {
+          await apiFetch('DELETE', `/properties/${propertyId}/images/${imgId}`);
+          div.remove();
+          showToast('Image deleted');
+        } catch(err) { showToast(err.message, true); }
+      });
+    });
+  }
+
+  function setupImageUpload(pid) {
+    const dropArea = document.getElementById('img-drop-area');
+    const fileInput = document.getElementById('img-file-input');
+    const browseBtn = document.getElementById('img-browse-btn');
+
+    browseBtn.addEventListener('click', (e) => { e.stopPropagation(); fileInput.click(); });
+    dropArea.addEventListener('click', () => fileInput.click());
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(ev => {
+      dropArea.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); });
+    });
+    dropArea.addEventListener('drop', e => { uploadFiles(e.dataTransfer.files, pid); });
+    fileInput.addEventListener('change', () => { uploadFiles(fileInput.files, pid); });
+  }
+
+  async function uploadFiles(files, pid) {
+    for (const file of files) {
+      try {
+        const fd = new FormData();
+        fd.append('file', file);
+        await apiFetch('POST', `/properties/${pid}/images`, fd, true);
+        showToast('Image uploaded');
+      } catch(err) { showToast(err.message, true); }
+    }
+    // Reload images
+    try {
+      const p = await apiFetch('GET', `/properties/${pid}`);
+      renderImages(p.images || []);
+    } catch {}
+  }
+
+  document.getElementById('property-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('submit-btn');
+    const errDiv = document.getElementById('form-error');
+    errDiv.classList.add('hidden');
+    btn.disabled = true;
+    btn.textContent = isEdit ? 'Saving...' : 'Publishing...';
+    const body = {
+      title: document.getElementById('title').value,
+      description: document.getElementById('description').value,
+      city: document.getElementById('city').value,
+      pricePerNight: parseFloat(document.getElementById('price').value),
+      imageUrl: ''
+    };
+    try {
+      if (isEdit) {
+        await apiFetch('PUT', `/properties/${editId}`, body);
+        showToast('Property updated!');
+        showImagesSection(editId, []);
+        // Refresh images
+        const p = await apiFetch('GET', `/properties/${editId}`);
+        renderImages(p.images || []);
+      } else {
+        const created = await apiFetch('POST', '/properties', body);
+        propertyId = created.id || created;
+        showToast('Property created! You can now upload images.');
+        showImagesSection(propertyId, []);
+      }
+      btn.textContent = isEdit ? 'Save Changes' : 'Saved';
+    } catch(err) {
+      errDiv.textContent = err.message || 'Failed to save property.';
+      errDiv.classList.remove('hidden');
+      btn.disabled = false;
+      btn.textContent = isEdit ? 'Save Changes' : 'Publish Property';
+    }
+  });
+</script>
+</body>
+</html>
