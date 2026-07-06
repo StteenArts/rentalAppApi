@@ -66,7 +66,7 @@ public class AppDbContext: DbContext
             .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<Wishlist>()
-            .HasOne<Property>()
+            .HasOne(w => w.Property)
             .WithMany()
             .HasForeignKey(w => w.PropertyId)
             .OnDelete(DeleteBehavior.Cascade);

@@ -42,6 +42,8 @@ public class WishlistService : IWishlistService
     public async Task<List<Wishlist>> GetWishlist(Guid userId)
     {
         return await _context.Wishlists
+            .Include(w => w.Property)
+            .ThenInclude(p => p!.Images)
             .Where(x => x.UserId == userId)
             .ToListAsync();
     }

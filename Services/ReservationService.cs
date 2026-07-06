@@ -70,6 +70,8 @@ public class ReservationService : IReservationService
     public async Task<List<Reservation>> GetByUserId(Guid userId)
     {
         return await _context.Reservations
+            .Include(r => r.Property)
+            .ThenInclude(p => p!.Images)
             .Where(x => x.UserId == userId)
             .ToListAsync();
     }

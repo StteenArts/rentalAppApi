@@ -9,7 +9,8 @@ public class Reservation
 
     public Guid PropertyId { get; set; }
 
-    [JsonIgnore]
+    // Expuesto en JSON (no [JsonIgnore]): bookings.html necesita los datos de la propiedad
+    // embebidos para renderizar la tarjeta de reserva sin un segundo request.
     public Property? Property { get; set; }
 
     public Guid UserId { get; set; }
